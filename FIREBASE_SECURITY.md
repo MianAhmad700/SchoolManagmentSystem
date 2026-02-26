@@ -1,6 +1,6 @@
 # 🔥 Firebase Security Rules Configuration
 
-To secure your "Riphah Public School Admin Panel", you need to apply these security rules in your Firebase Console.
+To secure your "Riphah Scinence Academy,Rachna Town Admin Panel", you need to apply these security rules in your Firebase Console.
 
 ## 1. Firestore Database Rules
 

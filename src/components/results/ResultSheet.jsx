@@ -144,7 +144,7 @@ export default function ResultSheet() {
     
     // Header
     doc.setFontSize(22);
-    doc.text("Riphah Public School", 105, 20, { align: "center" });
+    doc.text("Riphah Scinence Academy,Rachna Town", 105, 20, { align: "center" });
     
     doc.setFontSize(16);
     doc.text(`Result Card: ${selectedExam}`, 105, 30, { align: "center" });
@@ -207,7 +207,7 @@ export default function ResultSheet() {
     const wb = XLSX.utils.book_new();
     
     const wsData = [
-        ["Riphah Public School"],
+        ["Riphah Scinence Academy,Rachna Town"],
         [`Result Card: ${selectedExam} - Class ${selectedClass}`],
         [],
         ["Student Name:", student.name, "Roll No:", student.rollNo],
@@ -315,7 +315,7 @@ export default function ResultSheet() {
         {generated && (
             <div className="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
                 <div className="text-center mb-6 hidden print:block">
-                    <h2 className="text-2xl font-bold">Riphah Public School</h2>
+                    <h2 className="text-2xl font-bold">Riphah Scinence Academy,Rachna Town</h2>
                     <h3 className="text-xl">Result Sheet - {selectedExam} ({selectedClass})</h3>
                 </div>
 

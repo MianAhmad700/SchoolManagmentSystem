@@ -88,7 +88,7 @@ export default function Login() {
             Welcome
           </h2>
           <p className="mt-2 text-sm text-slate-500 font-medium">
-             Sign in to Riphah Public School Portal
+             Sign in to Riphah Scinence Academy,Rachna Town Portal
           </p>
         </div>
 

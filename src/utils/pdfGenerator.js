@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
 
-export const generateFeeReceipt = (feeData, schoolName = "Riphah Public School") => {
+export const generateFeeReceipt = (feeData, schoolName = "Riphah Scinence Academy,Rachna Town") => {
   const doc = new jsPDF();
   
   // Header
@@ -67,7 +67,7 @@ export const generateFeeReceipt = (feeData, schoolName = "Riphah Public School")
   doc.save(`Receipt_${feeData.studentName}_${feeData.month}_${feeData.year}.pdf`);
 };
 
-export const generateExpenseReceipt = (expenseData, schoolName = "Riphah Public School") => {
+export const generateExpenseReceipt = (expenseData, schoolName = "Riphah Scinence Academy,Rachna Town") => {
   const doc = new jsPDF();
   
   // Header
@@ -143,7 +143,7 @@ export const exportResultsToExcel = (data, fileName = "Results_Report") => {
 
 export const generateClassDiaryPdf = (opts) => {
   const {
-    schoolName = "Riphah Public School",
+    schoolName = "Riphah Scinence Academy,Rachna Town",
     classLabel = "",
     dateStr = "",
     entries = []
@@ -192,7 +192,7 @@ export const generateClassDiaryPdf = (opts) => {
 
 export const generateBulkDiaryPdf = (opts) => {
   const {
-    schoolName = "Riphah Public School",
+    schoolName = "Riphah Scinence Academy,Rachna Town",
     dateStr = "",
     items = []
   } = opts || {};
