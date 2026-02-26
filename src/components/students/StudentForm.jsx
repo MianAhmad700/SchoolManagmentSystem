@@ -192,22 +192,15 @@ export default function StudentForm({ student, onSuccess, onClose }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Gender <span className="text-red-600" aria-hidden="true">*</span>
+                Gender <span className="text-slate-400">(Optional)</span>
               </label>
               <select
-                {...register('gender', { required: 'Required' })}
-                aria-required="true"
-                aria-invalid={!!errors.gender}
-                aria-describedby={errors.gender ? 'gender-error' : undefined}
-                className={cn(
-                  "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2",
-                  errors.gender && "border-red-500 focus:border-red-500 focus:ring-red-500"
-                )}
+                {...register('gender')}
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
-              {errors.gender && <span id="gender-error" className="text-red-600 text-xs" role="alert">{errors.gender.message}</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
@@ -228,57 +221,36 @@ export default function StudentForm({ student, onSuccess, onClose }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                B-Form / CNIC <span className="text-red-600" aria-hidden="true">*</span>
+                B-Form / CNIC <span className="text-slate-400">(Optional)</span>
               </label>
               <input
-                {...register('bFormCnic', { required: 'Required' })}
+                {...register('bFormCnic')}
                 onChange={(e) => onCnicInput(e, 'bFormCnic')}
-                aria-required="true"
-                aria-invalid={!!errors.bFormCnic}
-                aria-describedby={errors.bFormCnic ? 'bFormCnic-error' : undefined}
-                className={cn(
-                  "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2",
-                  errors.bFormCnic && "border-red-500 focus:border-red-500 focus:ring-red-500"
-                )}
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
                 placeholder="XXXXX-XXXXXXX-X"
               />
-              {errors.bFormCnic && <span id="bFormCnic-error" className="text-red-600 text-xs" role="alert">{errors.bFormCnic.message}</span>}
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700">
-                Photo <span className="text-red-600" aria-hidden="true">*</span>
+                Photo <span className="text-slate-400">(Optional)</span>
               </label>
               <div className="flex items-center gap-4">
                 <input type="file" accept="image/*" onChange={handlePhoto} />
-                <input
-                  type="hidden"
-                  {...register('photoBase64', { required: 'Required' })}
-                  aria-required="true"
-                  aria-invalid={!!errors.photoBase64}
-                  aria-describedby={errors.photoBase64 ? 'photoBase64-error' : undefined}
-                />
+                <input type="hidden" {...register('photoBase64')} />
                 {watch('photoBase64') && (
                   <img alt="preview" src={watch('photoBase64')} className="h-16 w-16 rounded object-cover border" />
                 )}
               </div>
-              {errors.photoBase64 && <span id="photoBase64-error" className="text-red-600 text-xs" role="alert">{errors.photoBase64.message}</span>}
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700">
-                Address <span className="text-red-600" aria-hidden="true">*</span>
+                Address <span className="text-slate-400">(Optional)</span>
               </label>
               <textarea
-                {...register('address', { required: 'Required' })}
-                aria-required="true"
-                aria-invalid={!!errors.address}
-                aria-describedby={errors.address ? 'address-error' : undefined}
+                {...register('address')}
                 rows={3}
-                className={cn(
-                  "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2",
-                  errors.address && "border-red-500 focus:border-red-500 focus:ring-red-500"
-                )}
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
               />
-              {errors.address && <span id="address-error" className="text-red-600 text-xs" role="alert">{errors.address.message}</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
@@ -356,51 +328,30 @@ export default function StudentForm({ student, onSuccess, onClose }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Guardian Name <span className="text-red-600" aria-hidden="true">*</span>
+                Guardian Name <span className="text-slate-400">(Optional)</span>
               </label>
               <input
-                {...register('guardianName', { required: 'Required' })}
-                aria-required="true"
-                aria-invalid={!!errors.guardianName}
-                aria-describedby={errors.guardianName ? 'guardianName-error' : undefined}
-                className={cn(
-                  "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2",
-                  errors.guardianName && "border-red-500 focus:border-red-500 focus:ring-red-500"
-                )}
+                {...register('guardianName')}
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
               />
-              {errors.guardianName && <span id="guardianName-error" className="text-red-600 text-xs" role="alert">{errors.guardianName.message}</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Guardian Phone <span className="text-red-600" aria-hidden="true">*</span>
+                Guardian Phone <span className="text-slate-400">(Optional)</span>
               </label>
               <input
-                {...register('guardianPhone', { required: 'Required' })}
-                aria-required="true"
-                aria-invalid={!!errors.guardianPhone}
-                aria-describedby={errors.guardianPhone ? 'guardianPhone-error' : undefined}
-                className={cn(
-                  "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2",
-                  errors.guardianPhone && "border-red-500 focus:border-red-500 focus:ring-red-500"
-                )}
+                {...register('guardianPhone')}
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
               />
-              {errors.guardianPhone && <span id="guardianPhone-error" className="text-red-600 text-xs" role="alert">{errors.guardianPhone.message}</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Relation <span className="text-red-600" aria-hidden="true">*</span>
+                Relation <span className="text-slate-400">(Optional)</span>
               </label>
               <input
-                {...register('relation', { required: 'Required' })}
-                aria-required="true"
-                aria-invalid={!!errors.relation}
-                aria-describedby={errors.relation ? 'relation-error' : undefined}
-                className={cn(
-                  "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2",
-                  errors.relation && "border-red-500 focus:border-red-500 focus:ring-red-500"
-                )}
+                {...register('relation')}
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
               />
-              {errors.relation && <span id="relation-error" className="text-red-600 text-xs" role="alert">{errors.relation.message}</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
@@ -471,57 +422,36 @@ export default function StudentForm({ student, onSuccess, onClose }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Section <span className="text-red-600" aria-hidden="true">*</span>
+                Section <span className="text-slate-400">(Optional)</span>
               </label>
               <input
-                {...register('section', { required: 'Required' })}
-                aria-required="true"
-                aria-invalid={!!errors.section}
-                aria-describedby={errors.section ? 'section-error' : undefined}
-                className={cn(
-                  "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2",
-                  errors.section && "border-red-500 focus:border-red-500 focus:ring-red-500"
-                )}
+                {...register('section')}
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
               />
-              {errors.section && <span id="section-error" className="text-red-600 text-xs" role="alert">{errors.section.message}</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Admission Date <span className="text-red-600" aria-hidden="true">*</span>
+                Admission Date <span className="text-slate-400">(Optional)</span>
               </label>
               <input
                 type="date"
-                {...register('admissionDate', { required: 'Required' })}
-                aria-required="true"
-                aria-invalid={!!errors.admissionDate}
-                aria-describedby={errors.admissionDate ? 'admissionDate-error' : undefined}
-                className={cn(
-                  "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2",
-                  errors.admissionDate && "border-red-500 focus:border-red-500 focus:ring-red-500"
-                )}
+                {...register('admissionDate')}
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
               />
-              {errors.admissionDate && <span id="admissionDate-error" className="text-red-600 text-xs" role="alert">{errors.admissionDate.message}</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Status <span className="text-red-600" aria-hidden="true">*</span>
+                Status <span className="text-slate-400">(Optional)</span>
               </label>
               <select
-                {...register('status', { required: 'Required' })}
-                aria-required="true"
-                aria-invalid={!!errors.status}
-                aria-describedby={errors.status ? 'status-error' : undefined}
-                className={cn(
-                  "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2",
-                  errors.status && "border-red-500 focus:border-red-500 focus:ring-red-500"
-                )}
+                {...register('status')}
+                className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
               >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
                 <option value="graduated">Graduated</option>
                 <option value="expelled">Expelled</option>
               </select>
-              {errors.status && <span id="status-error" className="text-red-600 text-xs" role="alert">{errors.status.message}</span>}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">Admission No</label>

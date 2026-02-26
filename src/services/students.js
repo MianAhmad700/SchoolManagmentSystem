@@ -137,7 +137,7 @@ export const getStudentById = async (id) => {
 
 export const addStudent = async (studentData) => {
   try {
-    const required = ["fullName","gender","dob","bFormCnic","fatherName","fatherPhone","classId","monthlyFee"];
+    const required = ["fullName","dob","fatherName","fatherCnic","fatherPhone","classId","monthlyFee"];
     const missing = required.filter(k => !studentData[k] && studentData[k] !== 0);
     if (missing.length) throw new Error("Missing required fields: " + missing.join(", "));
     const admissionDateStr = studentData.admissionDate || new Date().toISOString().slice(0,10);
