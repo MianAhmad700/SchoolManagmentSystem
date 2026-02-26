@@ -12,41 +12,45 @@ export default function BulkUpload({ onSuccess, onClose }) {
   const fileInputRef = useRef(null);
 
   const downloadTemplate = () => {
-    // Define headers
     const headers = [
-      "name", "fatherName", "gender", "dob", "bForm", "phone", 
-      "admissionNo", "classId", "rollNo", "admissionDate", 
-      "status", "monthlyFee", "address"
+      "fullName","gender","dob","bFormCnic","photoBase64","address",
+      "bloodGroup","religion","medicalNotes",
+      "fatherName","fatherCnic","fatherPhone","guardianName","guardianPhone","relation",
+      "motherName","motherPhone","email","occupation",
+      "session","classId","section","admissionDate","status",
+      "monthlyFee","admissionFee","discount","transportFee","hostelFee","otherCharges",
+      "prevSchool","lastClass","leavingReason","prevGrade"
     ];
 
-    // Generate 30 dummy records
     const dummyData = Array.from({ length: 30 }).map((_, i) => ({
-      name: `Student ${i + 1}`,
-      fatherName: `Father ${i + 1}`,
+      fullName: `Student ${i + 1}`,
       gender: i % 2 === 0 ? "Male" : "Female",
       dob: "2015-01-01",
-      bForm: `12345-1234567-${i}`,
-      phone: `0300-123456${i}`,
-      admissionNo: `ADM-${202400 + i}`,
+      bFormCnic: "12345-1234567-1",
+      photoBase64: "",
+      address: `Street ${i + 1}, City`,
+      fatherName: `Father ${i + 1}`,
+      fatherCnic: "12345-1234567-1",
+      fatherPhone: `0300-123456${i}`,
+      guardianName: `Father ${i + 1}`,
+      guardianPhone: `0300-123456${i}`,
+      relation: "Father",
+      session: "2026-2027",
       classId: `${(i % 10) + 1}`,
-      rollNo: `${i + 1}`,
+      section: "A",
       admissionDate: new Date().toISOString().split('T')[0],
       status: "active",
-      monthlyFee: 5000,
-      address: `Street ${i + 1}, City`
+      monthlyFee: 5000
     }));
 
-    // Create workbook and worksheet
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(dummyData, { header: headers });
 
-    // Adjust column widths
-    const wscols = headers.map(() => ({ wch: 15 }));
+    const wscols = headers.map(() => ({ wch: 18 }));
     ws['!cols'] = wscols;
 
     XLSX.utils.book_append_sheet(wb, ws, "Students_Template");
 
-    // Write file
     XLSX.writeFile(wb, "Student_Upload_Template.xlsx");
   };
 
@@ -107,11 +111,10 @@ export default function BulkUpload({ onSuccess, onClose }) {
   };
 
   const validateHeaders = (firstRow) => {
-      const required = ['name', 'fatherName', 'admissionNo', 'classId'];
+      const required = ['fullName','gender','dob','bFormCnic','fatherName','fatherPhone','classId','monthlyFee'];
       const missing = required.filter(field => !Object.keys(firstRow).includes(field));
-      
       if (missing.length > 0) {
-          toast.warning(`Missing potential headers: ${missing.join(', ')}. Please check the template.`);
+          toast.warning(`Missing required headers: ${missing.join(', ')}`);
       }
   };
 
@@ -120,14 +123,50 @@ export default function BulkUpload({ onSuccess, onClose }) {
 
     setUploading(true);
     try {
-        // Clean up data before sending
-        const cleanData = preview.map(row => ({
-            ...row,
-            createdAt: new Date().toISOString(),
-            // Ensure numeric fields are numbers
+        const cleanData = preview.map(row => {
+          const map = {
+            fullName: row.fullName || row.name,
+            gender: row.gender,
+            dob: row.dob,
+            bFormCnic: row.bFormCnic || row.bForm,
+            photoBase64: row.photoBase64 || '',
+            address: row.address || '',
+            bloodGroup: row.bloodGroup || '',
+            religion: row.religion || '',
+            medicalNotes: row.medicalNotes || '',
+            fatherName: row.fatherName,
+            fatherCnic: row.fatherCnic || '',
+            fatherPhone: row.fatherPhone || row.phone,
+            motherName: row.motherName || '',
+            motherPhone: row.motherPhone || '',
+            email: row.email || '',
+            occupation: row.occupation || '',
+            guardianName: row.guardianName || row.fatherName,
+            guardianPhone: row.guardianPhone || row.fatherPhone,
+            relation: row.relation || 'Father',
+            session: row.session,
+            classId: row.classId,
+            section: row.section,
+            admissionDate: row.admissionDate,
+            status: row.status || 'active',
             monthlyFee: Number(row.monthlyFee) || 0,
-            status: row.status || 'active'
-        }));
+            admissionFee: Number(row.admissionFee || 0),
+            discount: Number(row.discount || 0),
+            transportFee: Number(row.transportFee || 0),
+            hostelFee: Number(row.hostelFee || 0),
+            otherCharges: Number(row.otherCharges || 0),
+            prevSchool: row.prevSchool || '',
+            lastClass: row.lastClass || '',
+            leavingReason: row.leavingReason || '',
+            prevGrade: row.prevGrade || ''
+          };
+          const required = ['fullName','gender','dob','bFormCnic','fatherName','fatherPhone','classId','monthlyFee'];
+          const missing = required.filter(k => !map[k] && map[k] !== 0);
+          if (missing.length) {
+            throw new Error(`Missing required fields for ${map.fullName || 'record'}: ${missing.join(', ')}`);
+          }
+          return map;
+        });
 
       await bulkAddStudents(cleanData);
       toast.success(`Successfully added ${cleanData.length} students`);

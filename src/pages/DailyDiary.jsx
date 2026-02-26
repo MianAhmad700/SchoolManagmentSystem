@@ -5,7 +5,7 @@ import { Save, Plus, Printer, Download } from "lucide-react";
 import { getAllClasses } from "../services/classes";
 import { getSubjectsByClass, addSubject as addSubjectRecord } from "../services/subjects";
 import { addDiaryEntry, getDiaryEntriesByClassAndDate } from "../services/diary";
-import { generateClassDiaryPdf } from "../utils/pdfGenerator";
+import { generateClassDiaryPdf, generateBulkDiaryPdf } from "../utils/pdfGenerator";
 
 const DEFAULT_SUBJECTS = ["Math", "English", "Urdu", "Science", "Computer", "Islamiyat", "Pak Studies"];
 
@@ -18,6 +18,8 @@ export default function DailyDiary() {
   const [newSubject, setNewSubject] = useState("");
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [selectedBulkClasses, setSelectedBulkClasses] = useState([]);
 
   useEffect(() => {
     getAllClasses().then(setClasses).catch(() => {});
@@ -130,6 +132,37 @@ export default function DailyDiary() {
     }
   };
 
+  const handleBulkPdf = async () => {
+    if (!selectedBulkClasses.length || !dateStr) {
+      toast.warn("Select at least one class and a date");
+      return;
+    }
+    setBulkLoading(true);
+    try {
+      const items = [];
+      for (const cid of selectedBulkClasses) {
+        const c = classes.find(x => x.name === cid || x.value === cid);
+        const label = c ? c.label : cid;
+        let list = [];
+        try {
+          list = await getDiaryEntriesByClassAndDate(cid, dateStr);
+        } catch {
+          list = [];
+        }
+        items.push({ classLabel: label, entries: list });
+      }
+      generateBulkDiaryPdf({
+        dateStr,
+        items
+      });
+      toast.success("Bulk diary PDF generated");
+    } catch {
+      toast.error("Failed to generate bulk diary PDF");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -176,6 +209,49 @@ export default function DailyDiary() {
                   onChange={e => setDateStr(e.target.value)}
                   className="mt-1 block w-full pl-3 pr-3 py-2 text-base bg-slate-50 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm rounded-lg transition-all"
                 />
+              </div>
+              <div className="pt-4 border-t border-slate-100">
+                <h4 className="text-sm font-bold text-slate-800 mb-2">Bulk Print</h4>
+                <div className="max-h-44 overflow-y-auto pr-1 space-y-2">
+                  {classes.map(c => {
+                    const cid = c.name || c.value;
+                    const checked = selectedBulkClasses.includes(cid);
+                    return (
+                      <label key={c.id} className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(e) => {
+                            const val = e.target.checked;
+                            if (val) {
+                              setSelectedBulkClasses(prev => [...new Set([...prev, cid])]);
+                            } else {
+                              setSelectedBulkClasses(prev => prev.filter(x => x !== cid));
+                            }
+                          }}
+                        />
+                        <span>{c.label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={handleBulkPdf}
+                  disabled={bulkLoading || selectedBulkClasses.length === 0}
+                  className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-800 text-white hover:bg-slate-900 disabled:opacity-50 transition-colors"
+                >
+                  {bulkLoading ? (
+                    <>
+                      <span className="inline-block animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                      Printing...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Print All Classes
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>

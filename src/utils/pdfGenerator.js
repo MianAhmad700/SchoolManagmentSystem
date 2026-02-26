@@ -189,3 +189,60 @@ export const generateClassDiaryPdf = (opts) => {
   const safeDate = (dateStr || format(new Date(), "yyyy-MM-dd")).replace(/\s+/g, "_");
   doc.save(`Diary_${safeClass}_${safeDate}.pdf`);
 };
+
+export const generateBulkDiaryPdf = (opts) => {
+  const {
+    schoolName = "Riphah Public School",
+    dateStr = "",
+    items = []
+  } = opts || {};
+
+  const doc = new jsPDF();
+
+  items.forEach((item, idx) => {
+    const classLabel = item.classLabel || "";
+    const entries = item.entries || [];
+
+    doc.setFontSize(22);
+    doc.setTextColor(41, 128, 185);
+    doc.text(schoolName, 105, 20, { align: "center" });
+
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Daily Diary", 105, 30, { align: "center" });
+
+    doc.setFontSize(11);
+    doc.setTextColor(80, 80, 80);
+    doc.text(`Class: ${classLabel}`, 14, 40);
+    doc.text(`Date: ${dateStr}`, 150, 40);
+
+    if (entries.length === 0) {
+      doc.setFontSize(12);
+      doc.setTextColor(120, 120, 120);
+      doc.text("No entries for this class.", 14, 55);
+    } else {
+      const head = [["Subject", "Diary"]];
+      const body = entries.map(e => [e.subject, e.text]);
+
+      autoTable(doc, {
+        startY: 50,
+        head,
+        body,
+        theme: "grid",
+        columnStyles: {
+          0: { cellWidth: 50 },
+          1: { cellWidth: 130 }
+        },
+        headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+        styles: { fontSize: 12, cellPadding: 3 }
+      });
+    }
+
+    if (idx < items.length - 1) {
+      doc.addPage();
+    }
+  });
+
+  const safeDate = (dateStr || format(new Date(), "yyyy-MM-dd")).replace(/\s+/g, "_");
+  doc.save(`Diary_AllClasses_${safeDate}.pdf`);
+};

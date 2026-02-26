@@ -8,7 +8,9 @@ import {
   getDoc, 
   query, 
   where, 
-  orderBy 
+  orderBy,
+  limit,
+  Timestamp
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
@@ -59,6 +61,46 @@ export const getAllStudents = async ({ filterClass = null, filterYear = null, se
   }
 };
 
+export const getNextRollNo = async (classId) => {
+  const q = query(collection(db, COLLECTION_NAME), where("classId", "==", classId));
+  const snap = await getDocs(q);
+  return snap.size + 1;
+};
+
+export const getNextAdmissionNo = async (admissionYear) => {
+  const year = String(admissionYear);
+  const start = `ADM-${year}-0000`;
+  const end = `ADM-${year}-9999`;
+  let seq = 0;
+  try {
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where("admissionNo", ">=", start),
+      where("admissionNo", "<=", end),
+      orderBy("admissionNo", "desc"),
+      limit(1)
+    );
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const last = snap.docs[0].data().admissionNo || start;
+      const parts = last.split("-");
+      seq = Number(parts[2]) || 0;
+    }
+  } catch {
+    const allSnap = await getDocs(collection(db, COLLECTION_NAME));
+    allSnap.forEach(d => {
+      const v = d.data().admissionNo || "";
+      if (v.startsWith(`ADM-${year}-`)) {
+        const parts = v.split("-");
+        const n = Number(parts[2]) || 0;
+        if (n > seq) seq = n;
+      }
+    });
+  }
+  const nextSeq = String(seq + 1).padStart(4, "0");
+  return `ADM-${year}-${nextSeq}`;
+};
+
 
 
 export const getStudentsByClass = async (className) => {
@@ -95,11 +137,67 @@ export const getStudentById = async (id) => {
 
 export const addStudent = async (studentData) => {
   try {
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), {
-      ...studentData,
-      createdAt: new Date().toISOString(),
-      status: 'active'
-    });
+    const required = ["fullName","gender","dob","bFormCnic","fatherName","fatherPhone","classId","monthlyFee"];
+    const missing = required.filter(k => !studentData[k] && studentData[k] !== 0);
+    if (missing.length) throw new Error("Missing required fields: " + missing.join(", "));
+    const admissionDateStr = studentData.admissionDate || new Date().toISOString().slice(0,10);
+    const year = Number((studentData.session && String(studentData.session).slice(0,4)) || admissionDateStr.slice(0,4));
+    const admissionNo = studentData.admissionNo || await getNextAdmissionNo(year);
+    const rollNo = studentData.rollNo || await getNextRollNo(studentData.classId);
+    const n = (v) => v !== undefined && v !== null && v !== "" ? Number(v) : 0;
+    const monthlyFee = n(studentData.monthlyFee);
+    const admissionFee = n(studentData.admissionFee);
+    const discount = n(studentData.discount);
+    const transportFee = n(studentData.transportFee);
+    const hostelFee = n(studentData.hostelFee);
+    const otherCharges = n(studentData.otherCharges);
+    const totalFee = monthlyFee + admissionFee + transportFee + hostelFee + otherCharges - discount;
+    const payload = {
+      admissionNo,
+      rollNo,
+      session: studentData.session || `${year}-${year+1}`,
+      classId: studentData.classId,
+      section: studentData.section || "",
+      fullName: studentData.fullName,
+      gender: studentData.gender,
+      dob: studentData.dob,
+      bFormCnic: studentData.bFormCnic,
+      photoBase64: studentData.photoBase64 || "",
+      address: studentData.address || "",
+      bloodGroup: studentData.bloodGroup || "",
+      religion: studentData.religion || "",
+      medicalNotes: studentData.medicalNotes || "",
+      fatherName: studentData.fatherName,
+      fatherCnic: studentData.fatherCnic || "",
+      fatherPhone: studentData.fatherPhone,
+      motherName: studentData.motherName || "",
+      motherPhone: studentData.motherPhone || "",
+      email: studentData.email || "",
+      occupation: studentData.occupation || "",
+      guardianName: studentData.guardianName || studentData.fatherName,
+      guardianPhone: studentData.guardianPhone || studentData.fatherPhone,
+      relation: studentData.relation || "Father",
+      monthlyFee,
+      admissionFee,
+      discount,
+      transportFee,
+      hostelFee,
+      otherCharges,
+      totalFee,
+      prevSchool: studentData.prevSchool || "",
+      lastClass: studentData.lastClass || "",
+      leavingReason: studentData.leavingReason || "",
+      prevGrade: studentData.prevGrade || "",
+      status: studentData.status || "active",
+      admissionDate: admissionDateStr,
+      createdAt: Timestamp.now(),
+      // Backward-compatibility aliases
+      name: studentData.fullName,
+      bForm: studentData.bFormCnic,
+      phone: studentData.fatherPhone,
+      photoUrl: studentData.photoBase64 || ""
+    };
+    const docRef = await addDoc(collection(db, COLLECTION_NAME), payload);
     return docRef.id;
   } catch (error) {
     console.error("Error adding student:", error);
